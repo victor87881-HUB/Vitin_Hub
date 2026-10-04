@@ -2,7 +2,6 @@
 --// Hub personalizado por Vitin
 --// Arquivos remotos configurados para o repositório público victor87881-HUB/Vitin_Hub (branch principal).
 
-```
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -10,6 +9,10 @@ local CoreGui = game:GetService("CoreGui")
 
 local LP = Players.LocalPlayer
 local PlayerGui = LP:WaitForChild("PlayerGui")
+
+-- Repositório oficial do Vitin Hub
+local GITHUB_BASE = "https://raw.githubusercontent.com/victor87881-HUB/Vitin_Hub/main/"
+
 
 local Games = {
     PlaceIds = {
@@ -345,7 +348,7 @@ local function makeDraggable(frame, handle)
     end)
 
     handle.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputState == Enum.UserInputState.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
             dragInput = input
         end
     end)
@@ -368,14 +371,26 @@ local function closeMenu()
     LoadingGui:Destroy()
 end
 
+local function notify(title, message, duration)
+    pcall(function()
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = title,
+            Text = message,
+            Duration = duration or 3
+        })
+    end)
+end
+
 local function launchGameScript(langCode)
     getgenv().Vitin_Hub_Language = langCode
-    
+
     local ok, data = pcall(readfile, "dropdowns.json")
     if ok and data then
-        local json = game:GetService("HttpService"):JSONDecode(data)
-        local savedName = json and json["LanguageSetting"]
-        if not savedName then
+        local decodeOk, json = pcall(function()
+            return game:GetService("HttpService"):JSONDecode(data)
+        end)
+
+        if decodeOk and json and not json["LanguageSetting"] then
             local NameMap = {
                 en = "English",
                 ar = "Arabic",
@@ -390,16 +405,40 @@ local function launchGameScript(langCode)
         end
     end
 
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "Vitin Hub",
-        Text = "The Script Will Be Load...",
-        Duration = 3
-    })
+    if not CurrentGame or not CurrentGame.Script then
+        notify("Vitin Hub", "Este jogo não é suportado.", 5)
+        warn("Vitin Hub - CurrentGame.Script ausente.")
+        return false
+    end
 
-    local scriptUrl = "https://raw.githubusercontent.com/victor87881-HUB/Vitin_Hub/principal/" .. CurrentGame.Script
-    pcall(function()
-        loadstring(game:HttpGet(scriptUrl))()
+    local scriptUrl = GITHUB_BASE .. CurrentGame.Script
+    notify("Vitin Hub", "Carregando " .. CurrentGame.Name .. "...", 3)
+
+    local httpOk, source = pcall(function()
+        return game:HttpGet(scriptUrl)
     end)
+
+    if not httpOk or type(source) ~= "string" or source == "" then
+        notify("Vitin Hub", "Não foi possível baixar o script.", 5)
+        warn("Vitin Hub - Falha HTTP: " .. tostring(source))
+        return false
+    end
+
+    local compileOk, fn = pcall(loadstring, source)
+    if not compileOk or type(fn) ~= "function" then
+        notify("Vitin Hub", "O script baixado tem erro de sintaxe.", 5)
+        warn("Vitin Hub - Erro de compilação: " .. tostring(fn))
+        return false
+    end
+
+    local runOk, runErr = pcall(fn)
+    if not runOk then
+        notify("Vitin Hub", "O script encontrou um erro ao iniciar.", 5)
+        warn("Vitin Hub - Erro de execução: " .. tostring(runErr))
+        return false
+    end
+
+    return true
 end
 
 local SkipButton = nil
@@ -691,16 +730,18 @@ else
 
         game:GetService("StarterGui"):SetCore("SendNotification", {
             Title = "Vitin Hub",
-            Text = "Loading Auto Clicker...",
+            Text = "Carregando Auto Clicker...",
             Duration = 3
         })
 
         local success, err = pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/victor87881-HUB/Vitin_Hub/principal/AutoClicker"))()
+            local source = game:HttpGet(GITHUB_BASE .. "AutoClicker")
+            local fn = assert(loadstring(source))
+            fn()
         end)
 
         if not success then
-            warn("Error loading Auto Clicker: " .. tostring(err))
+            warn("Vitin Hub - Erro ao carregar Auto Clicker: " .. tostring(err))
         else
             LoadingGui:Destroy()
         end
@@ -738,16 +779,18 @@ else
 
         game:GetService("StarterGui"):SetCore("SendNotification", {
             Title = "Vitin Hub",
-            Text = "Loading Animations...",
+            Text = "Carregando Animações...",
             Duration = 3
         })
 
         local success, err = pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/victor87881-HUB/Vitin_Hub/principal/Animations"))()
+            local source = game:HttpGet(GITHUB_BASE .. "Animations")
+            local fn = assert(loadstring(source))
+            fn()
         end)
 
         if not success then
-            warn("Error loading Animations: " .. tostring(err))
+            warn("Vitin Hub - Erro ao carregar Animações: " .. tostring(err))
         else
             LoadingGui:Destroy()
         end
