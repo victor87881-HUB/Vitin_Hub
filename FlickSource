@@ -1,0 +1,6 @@
+print("Flick carregou!")
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "Vitin Hub",
+    Text = "FlickSource funcionou!",
+    Duration = 10
+})
