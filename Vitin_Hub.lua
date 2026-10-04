@@ -1,6 +1,6 @@
 --// VITIN HUB
 --// Hub personalizado por Vitin
---// Coloque seu usuário do GitHub no lugar de SEU_USUARIO para usar seus próprios arquivos remotos.
+--// Arquivos remotos configurados para o repositório público victor87881-HUB/Vitin_Hub (branch principal).
 
 ```
 local Players = game:GetService("Players")
@@ -396,7 +396,7 @@ local function launchGameScript(langCode)
         Duration = 3
     })
 
-    local scriptUrl = "https://raw.githubusercontent.com/SEU_USUARIO/Vitin_Hub/main/" .. CurrentGame.Script
+    local scriptUrl = "https://raw.githubusercontent.com/victor87881-HUB/Vitin_Hub/principal/" .. CurrentGame.Script
     pcall(function()
         loadstring(game:HttpGet(scriptUrl))()
     end)
@@ -696,7 +696,7 @@ else
         })
 
         local success, err = pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/SEU_USUARIO/Vitin_Hub/main/AutoClicker"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/victor87881-HUB/Vitin_Hub/principal/AutoClicker"))()
         end)
 
         if not success then
@@ -743,7 +743,7 @@ else
         })
 
         local success, err = pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/SEU_USUARIO/Vitin_Hub/main/Animations"))()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/victor87881-HUB/Vitin_Hub/principal/Animations"))()
         end)
 
         if not success then
@@ -793,4 +793,3 @@ local function runLoadingSequence()
 end
 
 task.spawn(runLoadingSequence)
-```
